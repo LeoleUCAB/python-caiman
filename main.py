@@ -19,16 +19,24 @@ class Food:
 class Pizza(Food):
     """docstring for Pizza"""
 
-    def __init__(self, price, name):
+    def __init__(self, price, size):
         super(Pizza, self).__init__()
         self.__price = price
-        self.__name = name
+        self.__size = size
 
-    def cost(self):
-        return self.__price
+    def cost(self, size):
+        return self.__price[size]
 
     def name(self):
-        return [self.__name]
+        return [self.__size]
+
+    def size(self):
+        sizeDict = {
+            'personal': 0,
+            'mediana': 1,
+            'familiar': 2
+        }
+        return sizeDict[self.__size.lower()]
 
 
 class Ingredient(Food):
@@ -39,8 +47,8 @@ class Ingredient(Food):
         self.__price = price
         self.__name = name
 
-    def cost(self):
-        return self.__price
+    def cost(self, size):
+        return self.__price[size]
 
     def name(self):
         return [self.__name]
@@ -54,8 +62,13 @@ class Decorator(object):
         self.__pizza = pizza
         self.__ingredient = ingredient
 
-    def cost(self):
-        return self.__pizza.cost() + self.__ingredient.cost()
+    def cost(self, size=None):
+        if size is None:
+            size = self.__pizza.size()
+        return self.__pizza.cost(size) + self.__ingredient.cost(size)
+
+    def size(self):
+        return self.__pizza.size()
 
     def name(self):
         return self.__pizza.name() + self.__ingredient.name()
@@ -66,7 +79,7 @@ class Decorator(object):
         duplicates = {i: ingredientList.count(i) for i in ingredientList[1:]}
         recipeList = list()
         recipeList.extend(self.__prettyIngredients(duplicates))
-        recipeString = 'Una ' + ingredientList[0] + ' con '
+        recipeString = 'Una pizza ' + ingredientList[0] + ' con '
         recipeString += ', '.join(recipeList[:-1])
         recipeString += ' y ' + recipeList[-1]
         return recipeString
@@ -82,20 +95,20 @@ class Decorator(object):
 
 
 if __name__ == "__main__":
-    largePizza = Pizza(100, 'pizza grande')
-    anchovies = Ingredient(10, 'anchoas')
-    pepperoni = Ingredient(15, 'pepperoni')
-    pineapple = Ingredient(50, 'piña')
-    myPizza = Decorator(largePizza, anchovies)
-    myPizza = Decorator(myPizza, pineapple)
-    myPizza = Decorator(myPizza, anchovies)
-    myPizza = Decorator(myPizza, pepperoni)
-    myPizza = Decorator(myPizza, pineapple)
-    myPizza = Decorator(myPizza, pineapple)
-    myPizza = Decorator(myPizza, pineapple)
-    myPizza = Decorator(myPizza, anchovies)
-    myPizza = Decorator(myPizza, pineapple)
-    myPizza = Decorator(myPizza, pepperoni)
+    largePizza = Pizza([10, 15, 20], 'Familiar')
+    jamon = Ingredient([1.5, 1.75, 2], 'jamón')
+    champinones = Ingredient([1.75, 2.05, 2.5], 'champiñones')
+    pimenton = Ingredient([1.5, 1.75, 2], 'pimentón')
+    myPizza = Decorator(largePizza, jamon)
+    myPizza = Decorator(myPizza, jamon)
+    myPizza = Decorator(myPizza, jamon)
+    myPizza = Decorator(myPizza, pimenton)
+    myPizza = Decorator(myPizza, pimenton)
+    myPizza = Decorator(myPizza, pimenton)
+    myPizza = Decorator(myPizza, pimenton)
+    myPizza = Decorator(myPizza, pimenton)
+    myPizza = Decorator(myPizza, champinones)
+    myPizza = Decorator(myPizza, champinones)
     print(myPizza.cost())
     print(myPizza.name())
     print(myPizza.recipe())
