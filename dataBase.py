@@ -53,7 +53,7 @@ def create_table(connection, create_table_sql, nombreTabla):
         cursor.execute(create_table_sql)
         print(f'Creada la tabla: {nombreTabla}')
     except:
-        print('Ha ocurrido un error al crear la tabla')
+        print(f'Ha ocurrido un error al crear la tabla: {nombreTabla}')
 
 
 if __name__ == '__main__':
