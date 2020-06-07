@@ -1,4 +1,4 @@
-from main import *
+from food import Pizza, Ingredient, Decorator
 
 lista = open('./pedidos/pedidos1.pz').readlines()
 pedidos = [x.replace('\n', '') for x in lista]
