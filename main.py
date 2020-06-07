@@ -80,8 +80,12 @@ class Decorator(object):
         recipeList = list()
         recipeList.extend(self.__prettyIngredients(duplicates))
         recipeString = 'Una pizza ' + ingredientList[0] + ' con '
-        recipeString += ', '.join(recipeList[:-1])
-        recipeString += ' y ' + recipeList[-1]
+        if len(ingredientList) > 2:
+            recipeString += ', '.join(recipeList[:-1])
+            recipeString += ' y ' + recipeList[-1]
+        else:
+            # Para imprimir bien la receta de pizzas con solo un extra
+            recipeString += ingredientList[1]
         return recipeString
 
     def __prettyIngredients(self, duplicates):
