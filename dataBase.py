@@ -3,35 +3,27 @@ import sqlite3
 database = r"./dataBase/pizzaDataBase.db"
 
 sql_create_pizza_table = """ CREATE TABLE IF NOT EXISTS pizza (
-                                        id integer PRIMARY KEY,
-                                        tamano varchar(30) NOT NULL,
-                                        precio double NOT NULL,
-                                        check(tamano = "personal" or tamano = "mediana" or tamano = "familiar")
+                                        primaryKey integer constraint pizza_pk primary key autoincrement,
+                                        pizza_id integer not null,
+                                        order_fk integer not null,
+                                        size_fk integer not null references size,
+                                        ingredient_fk integer,
+                                        foreign key (ingredient_fk, size_fk) references ingredient
                                     ); """
 
 sql_create_ingrediente_table = """ CREATE TABLE IF NOT EXISTS ingrediente (
-                                        id integer PRIMARY KEY,
-                                        nombre varchar(30) NOT NULL,
-                                        precio double NOT NULL
+                                        id integer,
+                                        size_id integer,
+                                        name text not null,
+                                        price   real not null,
+                                        constraint ingredient_pk primary key (id, size_id)
                                     ); """
 
-sql_create_cliente_table = """ CREATE TABLE IF NOT EXISTS cliente (
-                                        id integer PRIMARY KEY,
-                                        nombre varchar(30) NOT NULL,
-                                        apellido varchar(30) NOT NULL
-                                    ); """
-
-sql_create_pedido_table = """ CREATE TABLE IF NOT EXISTS cliente (
-                                        id integer PRIMARY KEY,
-                                        fecha_pedido date NOT NULL,
-                                        precio double NOT NULL,
-                                        fk_pizza integer NOT NULL,
-                                        fk_cliente integer NOT NULL,
-                                        fk_ingrediente integer,
-                                        FOREIGN KEY (fk_pizza) REFERENCES pizza (id),
-                                        FOREIGN KEY (fk_cliente) REFERENCES cliente (id),
-                                        FOREIGN KEY (fk_ingrediente) REFERENCES ingrediente (id)
-                                    ); """
+sql_create_size_table = """ CREATE TABLE IF NOT EXISTS size (
+                                    id integer constraint size_pk primary key,
+                                    name text,
+                                    price real
+                                ); """
 
 def create_connection(db_file):
     """creating DataBase connection"""
@@ -67,11 +59,8 @@ if __name__ == '__main__':
         # create ingrediente table
         create_table(connection, sql_create_ingrediente_table, "Ingrediente")
  
-        # create cliente table
-        create_table(connection, sql_create_cliente_table, "Cliente")
-
-        # create pedido table
-        create_table(connection, sql_create_pedido_table, "Pedido")
+        # create size table
+        create_table(connection, sql_create_size_table, "Tamaño")
 
     else:
         print("Error! cannot create the database connection.")
