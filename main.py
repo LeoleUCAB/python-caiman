@@ -1,4 +1,6 @@
-from food import Pizza, Ingredient, Decorator
+from pizza import Pizza
+from ingredient import Ingredient
+from decorator import Decorator
 from readFile import searchForFilePath, fileToObject, showPizzaList
 
 if __name__ == "__main__":

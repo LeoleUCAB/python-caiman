@@ -27,6 +27,11 @@ sql_create_size_table = """ CREATE TABLE IF NOT EXISTS size (
                                     price real
                                 ); """
 
+sql_create_pedido_table = """ CREATE TABLE IF NOT EXISTS pedido (
+                                    id integer constraint pedido_pk primary key,
+                                    fecha date not null,
+                                ); """
+
 # INSERTS -------------------------------------------------------------------------------------------------------
 
 sql_insert_pizza_table = """ """
