@@ -9,8 +9,10 @@ sql_create_pizza_table = """ CREATE TABLE IF NOT EXISTS pizza (
                                         pizza_id integer not null,
                                         order_fk integer not null,
                                         size_fk integer not null references size,
-                                        ingredient_fk integer,
-                                        foreign key (ingredient_fk, size_fk) references ingredient
+                                        ingredient_fk integer not null,
+                                        pedido_fk integer not null,
+                                        foreign key (ingredient_fk, size_fk) references ingredient,
+                                        foreign key (pedido_fk) references pedido
                                     ); """
 
 sql_create_ingredient_table = """ CREATE TABLE IF NOT EXISTS ingredient (
@@ -29,7 +31,7 @@ sql_create_size_table = """ CREATE TABLE IF NOT EXISTS size (
 
 sql_create_pedido_table = """ CREATE TABLE IF NOT EXISTS pedido (
                                     id integer constraint pedido_pk primary key,
-                                    fecha date not null,
+                                    fecha date not null
                                 ); """
 
 # INSERTS -------------------------------------------------------------------------------------------------------
@@ -88,6 +90,8 @@ if __name__ == '__main__':
         create_table(connection, sql_create_size_table, "Tamaño")
         # create ingredient table
         create_table(connection, sql_create_ingredient_table, "Ingrediente")
+        # create pedido table
+        create_table(connection, sql_create_pedido_table, "Pedido")
         # create pizza table
         create_table(connection, sql_create_pizza_table, "Pizza")
 
