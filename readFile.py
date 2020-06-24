@@ -1,11 +1,13 @@
-from food import Pizza, Ingredient, Decorator
+from pizza import Pizza
+from ingredient import Ingredient
+from decorator import Decorator
 import tkinter
 from tkinter import filedialog
 import os
 
 
 def searchForFilePath():
-    main_win = tkinter.Tk() 
+    main_win = tkinter.Tk()
     main_win.withdraw()
 
     main_win.overrideredirect(True)
