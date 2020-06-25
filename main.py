@@ -18,8 +18,6 @@ if __name__ == "__main__":
                 print("Archivo no válido")
             else:
                 showPizzaList(pizzaList)
-
-    
     """
     myPizza = Pizza([10, 15, 20], 'Familiar')
     jamon = Ingredient([1.5, 1.75, 2], 'jamón')

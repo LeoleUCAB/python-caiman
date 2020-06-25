@@ -17,8 +17,9 @@ def searchForFilePath():
     main_win.lift()
     main_win.focus_force()
 
-    main_win.sourceFile = filedialog.askopenfilename(parent=main_win, 
-    initialdir= "/", title='Please select a directory')
+    main_win.sourceFile = filedialog.askopenfilename(
+        parent=main_win,
+        initialdir="/", title='Please select a directory')
 
     main_win.destroy()
     return main_win.sourceFile
