@@ -7,9 +7,8 @@ database = r"./dataBase/pizzaDataBase.db"
 sql_create_pizza_table = """CREATE TABLE IF NOT EXISTS pizza (
     primaryKey integer constraint pizza_pk primary key autoincrement,
     pizza_id integer not null,
-    order_fk integer not null,
     size_fk integer not null references size,
-    ingredient_fk integer not null,
+    ingredient_fk integer,
     pedido_fk integer not null,
     foreign key (ingredient_fk, size_fk) references ingredient,
     foreign key (pedido_fk) references pedido
@@ -30,18 +29,18 @@ sql_create_size_table = """CREATE TABLE IF NOT EXISTS size (
     ); """
 
 sql_create_pedido_table = """CREATE TABLE IF NOT EXISTS pedido (
-    id integer constraint pedido_pk primary key,
+    id integer constraint pedido_pk primary key autoincrement,
     fecha date not null
     ); """
 
 # INSERTS ---------------------------------------------------------------------
 
 sql_insert_size_table_personal = """INSERT INTO size (id, name, price)
-                                                 VALUES (1, 'Personal', 10)"""
+                                                 VALUES (1, 'personal', 10)"""
 sql_insert_size_table_mediana = """INSERT INTO size (id, name, price)
-                                                 VALUES (2, 'Mediana', 15)"""
+                                                 VALUES (2, 'mediana', 15)"""
 sql_insert_size_table_familiar = """INSERT INTO size (id, name, price)
-                                                 VALUES (3, 'Familiar', 20)"""
+                                                 VALUES (3, 'familiar', 20)"""
 
 sql_insert_ingredient_table_jamonPersonal = """INSERT INTO ingredient
   (id, size_id, name, price) VALUES (1, 1, 'Jamón', 1.5)"""
@@ -72,11 +71,11 @@ sql_insert_ingredient_table_dobleQuesoFamiliar = """INSERT INTO ingredient
  (id, size_id, name, price) VALUES (4, 3, 'Doble Queso', 1.7)"""
 
 sql_insert_ingredient_table_AceitunaPersonal = """INSERT INTO ingredient
- (id, size_id, name, price) VALUES (5, 1, 'Aceituna', 1.8)"""
+ (id, size_id, name, price) VALUES (5, 1, 'Aceitunas', 1.8)"""
 sql_insert_ingredient_table_AceitunaMediano = """INSERT INTO ingredient
- (id, size_id, name, price) VALUES (5, 2, 'Aceituna', 2.15)"""
+ (id, size_id, name, price) VALUES (5, 2, 'Aceitunas', 2.15)"""
 sql_insert_ingredient_table_AceitunaFamiliar = """INSERT INTO ingredient
- (id, size_id, name, price) VALUES (5, 3, 'Aceituna', 2.6)"""
+ (id, size_id, name, price) VALUES (5, 3, 'Aceitunas', 2.6)"""
 
 sql_insert_ingredient_table_pepperoniPersonal = """INSERT INTO ingredient
  (id, size_id, name, price) VALUES (6, 1, 'Pepperoni', 1.25)"""
@@ -91,6 +90,104 @@ sql_insert_ingredient_table_salchichonMediano = """INSERT INTO ingredient
  (id, size_id, name, price) VALUES (7, 2, 'Salchichón', 1.85)"""
 sql_insert_ingredient_table_salchichonFamiliar = """INSERT INTO ingredient
  (id, size_id, name, price) VALUES (7, 3, 'Salchichón', 2.1)"""
+
+sql_insert_order = """INSERT INTO pedido (fecha) VALUES (?)"""
+sql_insert_pizza = """INSERT INTO pizza (pizza_id, size_fk,ingredient_fk,pedido_fk)
+VALUES (?,?,?,?)"""
+sql_insert_pizza_no_ingredient = """INSERT INTO pizza (pizza_id, size_fk,pedido_fk)
+VALUES (?,?,?)"""
+
+
+def insert_pizza_ingredient(pizza, id_pizza, pedido_fk):
+    connection = create_connection(database)
+    for ingredient in pizza.name()[1:]:
+        try:
+            print(ingredient)
+            data_tuple = select_pizza_size(pizza, ingredient)
+            final_data_tuple = (id_pizza, data_tuple[0], data_tuple[1], pedido_fk)
+            cursor = connection.cursor()
+            cursor.execute(sql_insert_pizza, final_data_tuple)
+            connection.commit()
+        except connection.Error:
+            print(
+                f'Ha ocurrido un error al insertar en la tabla')
+
+
+def insert_pizza(pizza, id_pizza, pedido_fk):
+    connection = create_connection(database)
+    try:
+        data_tuple = select_pizza_size_no_ingredient(pizza)
+        final_data_tuple = (id_pizza, data_tuple, pedido_fk)
+        cursor = connection.cursor()
+        cursor.execute(sql_insert_pizza_no_ingredient, final_data_tuple)
+        connection.commit()
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error al insertar en la tabla')
+
+
+def select_pizza_size_no_ingredient(pizza):
+    connection = create_connection(database)
+    try:
+        print(pizza.name()[0])
+        data_tuple = (pizza.name()[0],)
+        cursor = connection.cursor()
+        cursor.execute("SELECT id from size where size.name LIKE ?",data_tuple)
+        row = cursor.fetchone()
+        print(row)
+        cursor.close()
+        connection.close()
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error')
+    return row[0]
+
+
+def select_pizza_size(pizza, ingredient_name):
+    connection = create_connection(database)
+    print(pizza.size()+1)
+    try:
+        data_tuple = (pizza.size()+1,'%'+ingredient_name[0:2]+'%')
+        cursor = connection.cursor()
+        cursor.execute("SELECT size_id, name, id from ingredient where ingredient.size_id = ? and ingredient.name LIKE ? COLLATE NOACCENTS",data_tuple)
+        row = cursor.fetchone()
+        print(row)
+        cursor.close()
+        connection.close()
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error')
+    return row[0], row[2]
+
+
+def insert_order(orden):
+    connection = create_connection(database)
+    data_tuple = (orden.fecha(),)
+    try:
+        cursor = connection.cursor()
+        cursor.execute(sql_insert_order, data_tuple)
+        connection.commit()
+        lastInsertedId = cursor.lastrowid
+        cursor.close()
+        connection.close()
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error al insertar en la tabla')
+    return lastInsertedId
+
+
+def select_last_inserted_pizza():
+    connection = create_connection(database)
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT COALESCE(MAX(pizza_id), 0)  FROM pizza")
+        row = cursor.fetchone()
+        cursor.close()
+        connection.close()
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error')
+    return row[0]
 
 
 def create_connection(db_file):
@@ -127,6 +224,7 @@ def insert_table(connection, insert_table_sql, nombreTabla):
     except connection.Error:
         print(
             f'Ha ocurrido un error al insertar en la tabla:{nombreTabla}')
+
 
 
 if __name__ == '__main__':
@@ -197,13 +295,13 @@ if __name__ == '__main__':
 
         insert_table(connection,
                      sql_insert_ingredient_table_AceitunaPersonal,
-                     "Aceituna personal")
+                     "Aceitunas personal")
         insert_table(connection,
                      sql_insert_ingredient_table_AceitunaMediano,
-                     "Aceituna mediana")
+                     "Aceitunas mediana")
         insert_table(connection,
                      sql_insert_ingredient_table_AceitunaFamiliar,
-                     "Aceituna familiar")
+                     "Aceitunas familiar")
 
         insert_table(connection,
                      sql_insert_ingredient_table_pepperoniPersonal,
@@ -226,3 +324,4 @@ if __name__ == '__main__':
                      "Salchichon familiar")
     else:
         print("Error! cannot create the database connection.")
+    connection.close()

@@ -15,4 +15,3 @@ class Food(ABC):
     @abstractmethod
     def name(self):
         return [self.__name]
-

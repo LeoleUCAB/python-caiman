@@ -1,6 +1,8 @@
 from pizza import Pizza
 from ingredient import Ingredient
 from decorator import Decorator
+from order import Order
+from dataBase import insert_order, insert_pizza, select_last_inserted_pizza, select_pizza_size, insert_pizza_ingredient
 import tkinter
 from tkinter import filedialog
 import os
@@ -33,11 +35,13 @@ def fileToObject(route):
     pedidos = [x.replace('\n', '') for x in lista]
     print(pedidos)
     i = 0
-    listaPizzas = []
+    listaOrdenes = []
     while(i < len(pedidos)):
         if pedidos[i] == 'COMIENZO_PEDIDO':
+            
             j = i+2
             # A dos líneas del comienzo se encuentran las pizzas
+            listaPizzas = []
             while(pedidos[j] != 'FIN_PEDIDO'):
                 orden = pedidos[j].split(";")
                 # Separa la pizza y extras en una lista
@@ -49,15 +53,34 @@ def fileToObject(route):
                     pizza = Decorator(pizza, ingrediente)
                 listaPizzas.append(pizza)
                 j = j+1
+            order = Order(pedidos[i+1].split(";")[1], listaPizzas)
+            listaOrdenes.append(order)
             i = j+1
         else:
             return None
-    return listaPizzas
+    return listaOrdenes
 
 
 def showPizzaList(listaPizzas):
     for pizza in listaPizzas:
         if type(pizza) == Decorator:
             print(pizza.recipe())
+        elif type(pizza) == Order:
+            print(pizza.fecha())
         else:
             print("Una pizza", pizza.name()[0], "sin extras")
+
+
+def showOrders(ordenes):
+    for orden in ordenes:
+        print(orden.fecha())
+        id_order = insert_order(orden)
+        print(f'el id es ${id_order}')
+        for pizza in orden.listaPizzas():
+            pizzaNumber = select_last_inserted_pizza() + 1
+            if type(pizza) == Decorator:
+                print(pizza.recipe())
+                insert_pizza_ingredient(pizza, pizzaNumber, id_order)
+            else:
+                insert_pizza(pizza, pizzaNumber, id_order)
+                print("Una pizza", pizza.name()[0], "sin extras")

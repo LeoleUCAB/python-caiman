@@ -1,7 +1,7 @@
 from pizza import Pizza
 from ingredient import Ingredient
 from decorator import Decorator
-from readFile import searchForFilePath, fileToObject, showPizzaList
+from readFile import searchForFilePath, fileToObject, showOrders
 
 if __name__ == "__main__":
     while True:
@@ -17,7 +17,7 @@ if __name__ == "__main__":
             if pizzaList is None:
                 print("Archivo no válido")
             else:
-                showPizzaList(pizzaList)
+                showOrders(pizzaList)
     """
     myPizza = Pizza([10, 15, 20], 'Familiar')
     jamon = Ingredient([1.5, 1.75, 2], 'jamón')
