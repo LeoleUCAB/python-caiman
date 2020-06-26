@@ -75,7 +75,7 @@ def showOrders(ordenes):
     for orden in ordenes:
         print(orden.fecha())
         id_order = insert_order(orden)
-        print(f'el id es ${id_order}')
+        print(f'Número del id de la orden: ${id_order}')
         for pizza in orden.listaPizzas():
             pizzaNumber = select_last_inserted_pizza() + 1
             if type(pizza) == Decorator:

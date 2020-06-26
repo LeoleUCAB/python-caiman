@@ -195,9 +195,7 @@ def create_connection(db_file):
 
     connection = None
     try:
-        print('Entre en el try')
         connection = sqlite3.connect(db_file)
-        print('Establecida la conexión con la Base de Datos')
         return connection
     except connection.Error:
         print('Ha ocurrido un error en la creacion de la BD')
