@@ -2,6 +2,7 @@ from pizza import Pizza
 from ingredient import Ingredient
 from decorator import Decorator
 from readFile import searchForFilePath, fileToObject, showOrders
+from report import generateReport, searchForReportPath
 
 
 if __name__ == "__main__":
@@ -9,6 +10,7 @@ if __name__ == "__main__":
         print("""
         Bienvenido a la pizzería
         1. Para subir archivo
+        2. Para generar reporte
         0. Salir""")
         menuOption = int(input("Elija una opción: "))
         if menuOption == 0:
@@ -19,6 +21,8 @@ if __name__ == "__main__":
                 print("Archivo no válido")
             else:
                 showOrders(pizzaList)
+        elif menuOption == 2:
+            generateReport(searchForReportPath())
     """
     myPizza = Pizza([10, 15, 20], 'Familiar')
     jamon = Ingredient([1.5, 1.75, 2], 'jamón')

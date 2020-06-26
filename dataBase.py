@@ -96,6 +96,46 @@ sql_insert_pizza = """INSERT INTO pizza (pizza_id, size_fk,ingredient_fk,pedido_
 VALUES (?,?,?,?)"""
 sql_insert_pizza_no_ingredient = """INSERT INTO pizza (pizza_id, size_fk,pedido_fk)
 VALUES (?,?,?)"""
+sql_select_report_pizza = """select size.name, pedido.fecha, count(distinct pizza_id) as pizzas,  size.price*count(distinct pizza_id) as total
+from pizza left outer join ingredient
+on pizza.ingredient_fk = ingredient.id
+and pizza.size_fk = ingredient.size_id, size, pedido
+where size.id=pizza.size_fk 
+and pizza.pedido_fk = pedido.id
+group by size.name, pedido.fecha
+order by pedido.fecha;"""
+
+sql_select_report_ingredient = """select ingredient.name, pedido.fecha, count(pizza.ingredient_fk) as ingredientes, sum(ingredient.price) as total
+from pizza, ingredient, pedido
+where pizza.ingredient_fk = ingredient.id
+and pizza.size_fk = ingredient.size_id
+and pizza.pedido_fk = pedido.id
+group by ingredient.name, pedido.fecha
+order by pedido.fecha;"""
+
+def select_report_ingredient():
+    connection = create_connection(database)
+    try:
+        
+        cursor = connection.cursor()
+        cursor.execute(sql_select_report_ingredient)
+        rows = cursor.fetchall()
+        return rows
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error al insertar en la tabla')
+
+def select_report_pizza():
+    connection = create_connection(database)
+    try:
+        
+        cursor = connection.cursor()
+        cursor.execute(sql_select_report_pizza)
+        rows = cursor.fetchall()
+        return rows
+    except connection.Error:
+        print(
+            f'Ha ocurrido un error al insertar en la tabla')
 
 
 def insert_pizza_ingredient(pizza, id_pizza, pedido_fk):
