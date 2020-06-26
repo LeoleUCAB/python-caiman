@@ -98,12 +98,12 @@ sql_insert_pizza_no_ingredient = """INSERT INTO pizza (pizza_id, size_fk,pedido_
 VALUES (?,?,?)"""
 
 
-def insert_pizza_ingredient(pizza, id_pizza, pedido_fk):
-    connection = create_connection(database)
+def insert_pizza_ingredient(connection, pizza, id_pizza, pedido_fk):
+
     for ingredient in pizza.name()[1:]:
         try:
             print(ingredient)
-            data_tuple = select_pizza_size(pizza, ingredient)
+            data_tuple = select_pizza_size(connection, pizza, ingredient)
             final_data_tuple = (id_pizza, data_tuple[0], data_tuple[1], pedido_fk)
             cursor = connection.cursor()
             cursor.execute(sql_insert_pizza, final_data_tuple)
@@ -113,10 +113,10 @@ def insert_pizza_ingredient(pizza, id_pizza, pedido_fk):
                 f'Ha ocurrido un error al insertar en la tabla')
 
 
-def insert_pizza(pizza, id_pizza, pedido_fk):
-    connection = create_connection(database)
+def insert_pizza(connection, pizza, id_pizza, pedido_fk):
+
     try:
-        data_tuple = select_pizza_size_no_ingredient(pizza)
+        data_tuple = select_pizza_size_no_ingredient(connection, pizza)
         final_data_tuple = (id_pizza, data_tuple, pedido_fk)
         cursor = connection.cursor()
         cursor.execute(sql_insert_pizza_no_ingredient, final_data_tuple)
@@ -126,8 +126,8 @@ def insert_pizza(pizza, id_pizza, pedido_fk):
             f'Ha ocurrido un error al insertar en la tabla')
 
 
-def select_pizza_size_no_ingredient(pizza):
-    connection = create_connection(database)
+def select_pizza_size_no_ingredient(connection, pizza):
+
     try:
         print(pizza.name()[0])
         data_tuple = (pizza.name()[0],)
@@ -143,8 +143,8 @@ def select_pizza_size_no_ingredient(pizza):
     return row[0]
 
 
-def select_pizza_size(pizza, ingredient_name):
-    connection = create_connection(database)
+def select_pizza_size(connection, pizza, ingredient_name):
+
     print(pizza.size()+1)
     try:
         data_tuple = (pizza.size()+1,'%'+ingredient_name[0:2]+'%')
@@ -160,8 +160,7 @@ def select_pizza_size(pizza, ingredient_name):
     return row[0], row[2]
 
 
-def insert_order(orden):
-    connection = create_connection(database)
+def insert_order(connection, orden):
     data_tuple = (orden.fecha(),)
     try:
         cursor = connection.cursor()
@@ -176,8 +175,8 @@ def insert_order(orden):
     return lastInsertedId
 
 
-def select_last_inserted_pizza():
-    connection = create_connection(database)
+def select_last_inserted_pizza(connection):
+
     try:
         cursor = connection.cursor()
         cursor.execute("SELECT COALESCE(MAX(pizza_id), 0)  FROM pizza")
@@ -195,7 +194,9 @@ def create_connection(db_file):
 
     connection = None
     try:
+        print('Entre en el try')
         connection = sqlite3.connect(db_file)
+        print('Establecida la conexión con la Base de Datos')
         return connection
     except connection.Error:
         print('Ha ocurrido un error en la creacion de la BD')

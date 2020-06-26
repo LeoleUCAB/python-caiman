@@ -2,11 +2,13 @@ from pizza import Pizza
 from ingredient import Ingredient
 from decorator import Decorator
 from order import Order
-from dataBase import insert_order, insert_pizza, select_last_inserted_pizza, select_pizza_size, insert_pizza_ingredient
+from dataBase import insert_order, insert_pizza, select_last_inserted_pizza, select_pizza_size, insert_pizza_ingredient, create_connection
 import tkinter
 from tkinter import filedialog
 import os
+import sqlite3
 
+database = r"./dataBase/pizzaDataBase.db"
 
 def searchForFilePath():
     main_win = tkinter.Tk()
@@ -72,15 +74,16 @@ def showPizzaList(listaPizzas):
 
 
 def showOrders(ordenes):
+    connection = create_connection(database)
     for orden in ordenes:
         print(orden.fecha())
-        id_order = insert_order(orden)
+        id_order = insert_order(connection, orden)
         print(f'el id es ${id_order}')
         for pizza in orden.listaPizzas():
-            pizzaNumber = select_last_inserted_pizza() + 1
+            pizzaNumber = select_last_inserted_pizza(connection) + 1
             if type(pizza) == Decorator:
                 print(pizza.recipe())
-                insert_pizza_ingredient(pizza, pizzaNumber, id_order)
+                insert_pizza_ingredient(connection, pizza, pizzaNumber, id_order)
             else:
-                insert_pizza(pizza, pizzaNumber, id_order)
+                insert_pizza(connection, pizza, pizzaNumber, id_order)
                 print("Una pizza", pizza.name()[0], "sin extras")
