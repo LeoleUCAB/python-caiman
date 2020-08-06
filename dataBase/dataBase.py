@@ -1,6 +1,6 @@
 import sqlite3
 
-database = r"./dataBase/pizzaDataBase.db"
+database = r"db.sqlite3"
 
 # CREATES --------------------------------------------------------------------
 
@@ -272,14 +272,6 @@ if __name__ == '__main__':
 
     # create tables
     if connection is not None:
-        # create size table
-        create_table(connection, sql_create_size_table, "Tamaño")
-        # create ingredient table
-        create_table(connection, sql_create_ingredient_table, "Ingrediente")
-        # create pedido table
-        create_table(connection, sql_create_pedido_table, "Pedido")
-        # create pizza table
-        create_table(connection, sql_create_pizza_table, "Pizza")
 
         # insert in table size
         insert_table(connection,
